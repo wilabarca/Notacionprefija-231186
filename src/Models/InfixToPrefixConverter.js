@@ -12,7 +12,7 @@ class InfixToPrefixConverter {
     }
 
     isOperand(char) {
-        return /^[a-zA-Z0-9_]$/.test(char);
+        return /^\d+$/.test(char);
     }
 
     isOperator(char) {
@@ -32,18 +32,18 @@ class InfixToPrefixConverter {
 
             if (this.isOperand(char)) {
                 prefix = char + prefix;
-            } else if (this.isOperator(char)) {
-                while (!stack.isEmpty() && this.precedenceOf(stack.top.data) > this.precedenceOf(char)) {
-                    prefix = stack.pop() + prefix;
-                }
-                stack.push(char);
             } else if (char === ')') {
                 stack.push(char);
             } else if (char === '(') {
                 while (!stack.isEmpty() && stack.top.data !== ')') {
                     prefix = stack.pop() + prefix;
                 }
-                stack.pop(); 
+                stack.pop(); // Pop '(' from the stack
+            } else if (this.isOperator(char)) {
+                while (!stack.isEmpty() && this.precedenceOf(stack.top.data) >= this.precedenceOf(char)) {
+                    prefix = stack.pop() + prefix;
+                }
+                stack.push(char);
             }
         }
 
@@ -56,3 +56,4 @@ class InfixToPrefixConverter {
 }
 
 export { InfixToPrefixConverter };
+
